@@ -1,79 +1,137 @@
-import React from 'react';
-import {View, Text, TouchableOpacity, Image} from 'react-native';
-import {getFontFamily} from '../../utils';
-import {authorize} from 'react-native-app-auth';
-import Config from 'react-native-config';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
+import React, { useEffect } from "react";
+import { View, Text, Image, ViewStyle } from "react-native";
+import { Pressable } from "react-native";
+import { useAuthRequest } from "expo-auth-session";
+import * as WebBrowser from "expo-web-browser";
+import * as SecureStore from "expo-secure-store";
+import * as Updates from "expo-updates";
+import { BASE_URL, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } from "@env";
 
-const config: any = {
-  issuer: 'https://api.intra.42.fr',
-  clientId: Config.REACT_NATIVE_CLIENT_ID,
-  clientSecret: Config.REACT_NATIVE_CLIENT_SECRET,
-  redirectUrl: 'swiftyCompanion://redirect',
-  serviceConfiguration: {
-    authorizationEndpoint: 'https://api.intra.42.fr/oauth/authorize',
-    tokenEndpoint: 'https://api.intra.42.fr/oauth/token',
-  },
+import AppBackgorund from "@/assets/images/app-background.png";
+import { FortyTwoIcon } from "@/components/icons";
+import loginMutation from "@/api/Login";
+
+WebBrowser.maybeCompleteAuthSession();
+
+const generateRandomString = (length: number) => {
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
 };
 
-const Login = () => {
-  const navigation = useNavigation<NavigationProp<any>>();
-
-  console.log('Config', config);
-
-  const handleLogin = async () => {
-    try {
-      const result = await authorize(config);
-      const accessToken = result.accessToken;
-      // Store the access token securely and navigate
-      navigation.navigate('Search', {token: accessToken});
-    } catch (error) {
-      console.error('Login failed', error);
-    }
-  };
+const BackroundImage = () => {
   return (
-    <View style={LOGIN_CONTAINER}>
-      <Image
-        source={require('../../assets/images/42background.jpg')}
-        style={IMG_STYLE}
-      />
-      <TouchableOpacity style={BUTTON_STYLE} onPress={handleLogin}>
-        <View>
-          <Text style={TEXT_STYLE}>Sign In</Text>
-        </View>
-      </TouchableOpacity>
+    <Image
+      source={AppBackgorund}
+      style={{
+        width: "100%",
+        height: "100%",
+        flex: 1,
+        resizeMode: "cover",
+        position: "absolute",
+        zIndex: -1,
+        top: 0,
+      }}
+    />
+  );
+};
+const Login = () => {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: CLIENT_ID,
+      redirectUri: REDIRECT_URI,
+    },
+    {
+      authorizationEndpoint: `${BASE_URL}/oauth/authorize`,
+      tokenEndpoint: `${BASE_URL}/oauth/token`,
+    }
+  );
+
+  useEffect(() => {
+    const handlGetAcessToken = async (code) => {
+      const credentials = {
+        grant_type: "authorization_code",
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        code: code,
+        redirect_uri: REDIRECT_URI,
+        state: generateRandomString(50),
+      };
+
+      try {
+        const result = await loginMutation(credentials);
+
+        const { status, data } = result;
+
+        if (status === 1 && data) {
+          await SecureStore.setItemAsync("session", JSON.stringify(data));
+          Updates.reloadAsync();
+        }
+      } catch {}
+    };
+    if (response?.type === "success") {
+      const { code } = response.params;
+      handlGetAcessToken(code);
+    }
+  }, [response]);
+
+  return (
+    <View style={LOGIN_CONTAINER_STYLE}>
+      <BackroundImage />
+      <View style={LOGIN_BUTTON_CONTAINER_STYLE}>
+        <Pressable
+          style={LOGIN_BUTTON_STYLE}
+          onPress={() => promptAsync({ showInRecents: true })}
+        >
+          <Text style={{ fontSize: 22, fontWeight: 700 }}>Sing in with</Text>
+          <FortyTwoIcon
+            style={{
+              right: 0,
+              width: 40,
+              height: 40,
+              marginLeft: 10,
+            }}
+          />
+        </Pressable>
+      </View>
     </View>
   );
 };
 
 export default Login;
 
-const LOGIN_CONTAINER: any = {
+const LOGIN_CONTAINER_STYLE: ViewStyle = {
   flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-  backgroundColor: 'red',
-  fontFamily: getFontFamily('bold'),
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
 };
 
-const BUTTON_STYLE: any = {
-  backgroundColor: '#00BABC',
-  color: 'white',
-  width: '80%',
-  height: 50,
+const LOGIN_BUTTON_CONTAINER_STYLE: ViewStyle = {
+  flex: 1,
+  alignItems: "center",
+  justifyContent: "center",
+  width: "80%",
+  height: 60,
+};
+
+const LOGIN_BUTTON_STYLE: ViewStyle = {
+  flexDirection: "row",
+  backgroundColor: "#F7F7F7",
+  width: "100%",
+  height: 60,
   borderRadius: 10,
-  justifyContent: 'center',
-  alignItems: 'center',
-};
-
-const IMG_STYLE: any = {
-  width: '100%',
-  height: '100%',
-  position: 'absolute',
-};
-
-const TEXT_STYLE: any = {
-  color: 'white',
-  fontSize: 18,
-  fontFamily: getFontFamily('bold'),
+  alignItems: "center",
+  justifyContent: "center",
+  shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 4,
+  },
+  shadowOpacity: 0.32,
+  shadowRadius: 5.46,
 };

@@ -1,23 +1,24 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { AuthProvider, useAuth } from "@/authContext";
+import { NavigationContainer } from "@react-navigation/native";
+import AuthStack from "@/navigation/AuthStack";
+import MainStack from "@/navigation/MainStack";
 
-import {NavigationContainer} from '@react-navigation/native';
-import React from 'react';
-import MainStack from './src/navigation/MainStack';
-import AuthStack from './src/navigation/AuthStack';
+const Wrapper = () => {
+  const { isAuthenticated } = useAuth();
 
-const App = () => {
-  const isAuth = false;
+  if (isAuthenticated) {
+    return <MainStack />;
+  }
 
-  return (
-    <NavigationContainer>
-      {isAuth ? <MainStack /> : <AuthStack />}
-    </NavigationContainer>
-  );
+  return isAuthenticated ? <MainStack /> : <AuthStack />;
 };
 
-export default App;
+export default function App() {
+  return (
+    <AuthProvider>
+      <NavigationContainer>
+        <Wrapper />
+      </NavigationContainer>
+    </AuthProvider>
+  );
+}
