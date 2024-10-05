@@ -3,12 +3,13 @@ import { View, Text, Image, ViewStyle, TextStyle } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 
 import Avatar from "@/components/atoms/Avatar";
-import { ArrowIcon } from "@/components/icons";
+import { ArrowIcon } from "@/components/atoms/icons";
 import DefaultColitionCover from "@/assets/images/default-cover-image.jpg";
 import DefaultProfileImage from "@/assets/images/default-profile-image.jpg";
+import { IUserInformationItems } from "@/api/UserById";
 
 interface IUserInformationsProps {
-  data: any;
+  data: IUserInformationItems;
   cursus: any;
   selectedCursus: any;
   setSelectedCursus: any;
@@ -172,7 +173,10 @@ const UserInformations = (props: IUserInformationsProps) => {
 
         <View style={PROGRESSIVE_BAR_STYLE}>
           <View
-            style={[PROGRESSIVE_BAR_CHILD_STYLE, { width: `${LevelPercent}%` }]}
+            style={[
+              PROGRESSIVE_BAR_CHILD_STYLE,
+              { width: `${+LevelPercent}%` },
+            ]}
           />
           <Text style={[LEVEL_TEXT_STYLE]}>{`${Level} %`}</Text>
         </View>

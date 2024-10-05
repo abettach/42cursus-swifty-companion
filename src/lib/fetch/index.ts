@@ -1,6 +1,5 @@
-import React from "react";
 import * as SecureStore from "expo-secure-store";
-import refreshToken from "@/api/RefreshToken";
+import * as Updates from "expo-updates";
 
 export interface CustomsFetchOptions {
   headers?: {
@@ -10,16 +9,6 @@ export interface CustomsFetchOptions {
 }
 
 export type FetchOptionsType = RequestInit & CustomsFetchOptions;
-
-const handleTokenExpired = async ({ refresh_token }) => {
-  try {
-    const response = await refreshToken({ refresh_token });
-
-    return response;
-  } catch (error) {
-    console.error("handleTokenExpired error==>", error);
-  }
-};
 
 export const fetchWithDefaultOption = async (
   url: string,
@@ -32,7 +21,7 @@ export const fetchWithDefaultOption = async (
   if (session) {
     const _jsonSession = JSON.parse(session);
 
-    const { access_token, expires_at, refresh_token } = _jsonSession;
+    const { access_token, expires_at } = _jsonSession;
 
     if (new Date().getTime() < expires_at) {
       _options.headers = {
@@ -41,17 +30,8 @@ export const fetchWithDefaultOption = async (
         "Content-Type": "application/json",
       };
     } else {
-      console.log("accessTokenExpired");
-      const respoonse = await handleTokenExpired({ refresh_token });
-      if (respoonse.status === 1) {
-        const { access_token } = respoonse.data;
-
-        options.headers = {
-          ...options.headers,
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        };
-      }
+      await SecureStore.deleteItemAsync("session");
+      Updates.reloadAsync();
     }
   }
 

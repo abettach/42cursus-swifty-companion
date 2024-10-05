@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
-import { View, Text, Image, ViewStyle } from "react-native";
+import { View, Text, Image, ViewStyle, ImageStyle } from "react-native";
 import { Pressable } from "react-native";
 import { useAuthRequest } from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import * as SecureStore from "expo-secure-store";
 import * as Updates from "expo-updates";
-import { BASE_URL, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } from "@env";
 
+import { BASE_URL, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI } from "@env";
 import AppBackgorund from "@/assets/images/app-background.png";
-import { FortyTwoIcon } from "@/components/icons";
+import { FortyTwoIcon } from "@/components/atoms/icons";
 import loginMutation from "@/api/Login";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -24,20 +24,7 @@ const generateRandomString = (length: number) => {
 };
 
 const BackroundImage = () => {
-  return (
-    <Image
-      source={AppBackgorund}
-      style={{
-        width: "100%",
-        height: "100%",
-        flex: 1,
-        resizeMode: "cover",
-        position: "absolute",
-        zIndex: -1,
-        top: 0,
-      }}
-    />
-  );
+  return <Image source={AppBackgorund} style={BACKGROUND_IMAGE_STYLE} />;
 };
 const Login = () => {
   const [request, response, promptAsync] = useAuthRequest(
@@ -103,6 +90,16 @@ const Login = () => {
 };
 
 export default Login;
+
+const BACKGROUND_IMAGE_STYLE: ImageStyle = {
+  width: "100%",
+  height: "100%",
+  flex: 1,
+  resizeMode: "cover",
+  position: "absolute",
+  zIndex: -1,
+  top: 0,
+};
 
 const LOGIN_CONTAINER_STYLE: ViewStyle = {
   flex: 1,

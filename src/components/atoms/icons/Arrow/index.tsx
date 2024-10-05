@@ -4,6 +4,8 @@ import Svg, { G, Path } from "react-native-svg";
 interface IArrowIconProps {
   fill?: string;
   style?: object;
+  width?: number;
+  height?: number;
 }
 
 const Arrow = (props: IArrowIconProps) => {

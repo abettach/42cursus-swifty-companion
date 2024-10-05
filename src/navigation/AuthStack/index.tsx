@@ -1,8 +1,13 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import Login from "@/screens/Login";
 
-const authStack = createNativeStackNavigator<any>();
+type LoginStackParamList = {
+  SignIn: undefined;
+};
+
+const authStack = createNativeStackNavigator<LoginStackParamList>();
 
 const AuthStack = () => {
   return (

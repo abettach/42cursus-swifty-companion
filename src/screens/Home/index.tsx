@@ -8,7 +8,11 @@ import {
   ImageStyle,
   ViewStyle,
   Text,
+  Pressable,
+  TextStyle,
 } from "react-native";
+import * as Secure from "expo-secure-store";
+import * as Updates from "expo-updates";
 
 import AppBackgorund from "@/assets/images/app-background.png";
 import SearchBar from "@/components/moleculs/SearchBar";
@@ -57,24 +61,25 @@ const Home = (props: Readonly<IHomeProps>) => {
 
   const NotFound = () => {
     return (
-      <View
-        style={{
-          width: "100%",
-          height: "100%",
-          alignItems: "center",
-          paddingTop: "50%",
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: "bold",
-            color: "gray",
-            opacity: 0.5,
+      <View style={NOT_FOUND_CONTAINER_STYLE}>
+        <Text style={NOT_FOUND_TEXT_STYLE}>User not found</Text>
+      </View>
+    );
+  };
+
+  const LogoutButton = () => {
+    return (
+      <View style={LOGOUT_BUTTON_CONTAINER_STYLE}>
+        <Pressable
+          onPress={async () => {
+            await Secure.deleteItemAsync("session");
+            Updates.reloadAsync();
           }}
         >
-          User not found
-        </Text>
+          <View style={LOGOUT_TEXT_CONTAINER_STYLE}>
+            <Text style={LOGOUT_TEXT_STYLE}>Logout</Text>
+          </View>
+        </Pressable>
       </View>
     );
   };
@@ -83,6 +88,7 @@ const Home = (props: Readonly<IHomeProps>) => {
     <>
       <BackroundImage />
       <View style={HOME_STYLE_CONTAINER}>
+        <LogoutButton />
         <SearchBar onChange={onChange} onSearchClick={onSearchClick} />
         {!isLoading && Array.isArray(usersData) && usersData.length === 0 && (
           <NotFound />
@@ -145,4 +151,41 @@ const BACKGROUND_IMAGE_STYLE: ImageStyle = {
   position: "absolute",
   zIndex: -1,
   top: 0,
+};
+
+const NOT_FOUND_CONTAINER_STYLE: ViewStyle = {
+  width: "100%",
+  height: "100%",
+  alignItems: "center",
+  paddingTop: "50%",
+};
+
+const NOT_FOUND_TEXT_STYLE: TextStyle = {
+  fontSize: 20,
+  fontWeight: "bold",
+  color: "gray",
+  opacity: 0.5,
+};
+
+const LOGOUT_BUTTON_CONTAINER_STYLE: ViewStyle = {
+  width: "100%",
+  height: 40,
+  marginTop: 70,
+  alignItems: "flex-end",
+  paddingHorizontal: 20,
+};
+
+const LOGOUT_TEXT_CONTAINER_STYLE: ViewStyle = {
+  width: 80,
+  height: 40,
+  backgroundColor: "#694BFD",
+  justifyContent: "center",
+  alignItems: "center",
+  borderRadius: 5,
+};
+
+const LOGOUT_TEXT_STYLE: TextStyle = {
+  fontSize: 16,
+  color: "white",
+  fontWeight: "bold",
 };

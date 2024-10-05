@@ -1,7 +1,7 @@
 import React from "react";
 import { View, TextInput, Pressable, ViewStyle } from "react-native";
 
-import { SearchIcon } from "@/components/icons";
+import { SearchIcon } from "@/components/atoms/icons";
 
 interface ISearchBarProps {
   onChange: (text: string) => void;

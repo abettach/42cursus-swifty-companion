@@ -82,7 +82,6 @@ const PublicProfile = (props: IPublicProfileProps) => {
           width: "100%",
         }}
       >
-        {/* //Information related to the user */}
         {!isLoading && userInformation ? (
           <UserInformations
             data={userInformation}
@@ -96,7 +95,6 @@ const PublicProfile = (props: IPublicProfileProps) => {
 
         <SplitComponent title={"Projects"} />
 
-        {/* //Information related to the projects */}
         {!isLoading && selectedCursus && userInformation && (
           <ProjectsCards
             projects={userInformation?.projects_users
@@ -119,7 +117,6 @@ const PublicProfile = (props: IPublicProfileProps) => {
 
         <SplitComponent title={"Skills"} />
 
-        {/* // Information related to the skills */}
         {!isLoading && selectedCursus && (
           <SkillsInfomration
             skills={userInformation.cursus_users.filter(
