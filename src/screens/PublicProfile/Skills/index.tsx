@@ -11,12 +11,12 @@ const SkillsInformation = (props: ISkillsInformationProps) => {
 
   return (
     <>
-      {skills[0]?.skills.length === 0 && (
+      {Array.isArray(skills) && skills[0]?.skills.length === 0 && (
         <View style={SKILLS_CONTAINER_STYLE}>
           <Text>No skills found</Text>
         </View>
       )}
-      {skills[0]?.skills.length > 0 && (
+      {Array.isArray(skills) && skills[0]?.skills.length > 0 && (
         <View style={SKILL_BAR_CONTAINER_STYLE}>
           {skills[0]?.skills.map((skill) => {
             return (

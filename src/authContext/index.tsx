@@ -17,8 +17,12 @@ export const AuthProvider = ({ children }: any) => {
       if (session) {
         const { expires_at } = JSON.parse(session);
 
-        if (new Date().getTime() < expires_at) setIsAuthenticated(true);
-        else setIsAuthenticated(false);
+        if (new Date().getTime() < expires_at) {
+          setIsAuthenticated(true);
+        } else {
+          await SecureStore.deleteItemAsync("session");
+          setIsAuthenticated(false);
+        }
       }
     };
 

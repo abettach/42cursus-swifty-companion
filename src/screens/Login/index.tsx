@@ -70,10 +70,7 @@ const Login = () => {
     <View style={LOGIN_CONTAINER_STYLE}>
       <BackroundImage />
       <View style={LOGIN_BUTTON_CONTAINER_STYLE}>
-        <Pressable
-          style={LOGIN_BUTTON_STYLE}
-          onPress={() => promptAsync({ showInRecents: true })}
-        >
+        <Pressable style={LOGIN_BUTTON_STYLE} onPress={() => promptAsync()}>
           <Text style={{ fontSize: 22, fontWeight: 700 }}>Sing in with</Text>
           <FortyTwoIcon
             style={{

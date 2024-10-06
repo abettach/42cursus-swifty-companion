@@ -56,7 +56,6 @@ const UserInformations = (props: IUserInformationsProps) => {
           data={cursus?.map((e) => ({
             title: e.cursus?.name,
           }))}
-          showsVerticalScrollIndicator={false}
           onSelect={(selectedItem, index) => {
             setSelectedCursus(cursus[index]);
           }}
